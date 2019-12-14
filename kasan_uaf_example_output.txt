@@ -1,0 +1,49 @@
+
+[   14.654296] c0 kasan test: kmalloc_uaf use-after-free
+[   14.654602] c0 ==================================================================
+[   14.654693] c0 BUG: KASan: use after free in kmalloc_uaf+0x58/0x70 at addr ecac2808
+[   14.654785] c0 Write of size 1 by task swapper/0/1
+[   14.654846] c0 =============================================================================
+[   14.654937] c0 BUG kmalloc-64 (Not tainted): kasan: bad access detected
+[   14.654968] c0 -----------------------------------------------------------------------------
+                  
+[   14.655059] c0 Disabling lock debugging due to kernel taint
+[   14.655181] c0 INFO: Allocated in kmalloc_uaf+0x34/0x70 age=0 cpu=0 pid=1
+[   14.655303] c0 	kmem_cache_alloc_trace+0x80/0x22c
+[   14.655395] c0 	kmalloc_uaf+0x34/0x70
+[   14.655487] c0 	kmalloc_tests_init+0x10/0x34
+[   14.655578] c0 	...... //省略
+[   14.655975] c0 	ret_from_fork+0x14/0x20
+[   14.656097] c0 INFO: Freed in kmalloc_uaf+0x50/0x70 age=0 cpu=0 pid=1
+[   14.656188] c0 	kfree+0x204/0x214
+[   14.656280] c0 	kmalloc_uaf+0x50/0x70
+[   14.656372] c0 	kmalloc_tests_init+0x10/0x34
+[   14.656463] c0 	...... //省略
+[   14.656860] c0 	ret_from_fork+0x14/0x20
+[   14.656921] c0 INFO: Slab 0xc192e840 objects=16 used=15 fp=0xecac2800 flags=0x0080
+[   14.657012] c0 INFO: Object 0xecac2800 @offset=2048 fp=0x  (null)
+                  
+[   14.657135] c0 Bytes b4 ecac27f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+[   14.657257] c0 Object ecac2800: 00 00 00 00 6e 65 6c 2f 73 6c 61 62 2f 63 66 71  ....nel/slab/cfq
+[   14.657379] c0 Object ecac2810: 5f 69 6f 5f 63 71 00 00 00 00 00 00 00 00 00 00  _io_cq..........
+[   14.657470] c0 Object ecac2820: ...... //省略
+[   14.657806] c0 Padding ecac28f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+[   14.657928] c0 CPU: 0 PID: 1 Comm: swapper/0 Tainted: G    B        3.10.65-00021-g802eaee-dirty #55
+[   14.658111] c0 [<c001ac34>] (unwind_backtrace+0x0/0x200) from [<c0016d1c>] (show_stack+0x20/0x24)
+[   14.658264] c0 [<c0016d1c>] ...... //省略
+[   14.658874] c0 [<c015cc58>] (object_err+0x3c/0x44) from [<c0161c28>] (kasan_report_error+0x1d4/0x2ac)
+[   14.659057] c0 [<c0161c28>] (kasan_report_error+0x1d4/0x2ac) from [<c0161dfc>] (kasan_report+0x4c/0x54)
+[   14.659210] c0 [<c0161dfc>] (kasan_report+0x4c/0x54) from [<c0160f38>] (__asan_store1+0x34/0x38)
+[   14.659362] c0 [<c0160f38>] (__asan_store1+0x34/0x38) from [<c0ed6a90>] (kmalloc_uaf+0x58/0x70)
+[   14.659515] c0 [<c0ed6a90>] (kmalloc_uaf+0x58/0x70) from [<c0ed6f9c>] (kmalloc_tests_init+0x10/0x34)
+[   14.659698] c0 [<c0ed6f9c>] (kmalloc_tests_init+0x10/0x34) from [<c0009860>] (do_one_initcall_debug+0x80/0x114)
+[   14.659881] c0 [<c0009860>] ...... //省略
+[   14.660430] c0 [<c095d738>] (kernel_init+0x1c/0xf8) from [<c0011388>] (ret_from_fork+0x14/0x20)
+[   14.660491] c0 Memory state around the buggy address:
+[   14.660614] c0  ecac2700: 00 00 00 00 00 00 00 00 fc fc fc fc fc fc fc fc
+[   14.660705] c0  ecac2780: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[   14.660797] c0 >ecac2800: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+[   14.660858] c0               ^
+[   14.660949] c0  ecac2880: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[   14.661041] c0  ecac2900: 00 00 00 00 00 00 00 00 fc fc fc fc fc fc fc fc
+[   14.661102] c0 ==================================================================
